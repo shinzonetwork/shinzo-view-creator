@@ -10,6 +10,7 @@ import (
 
 func MakeViewDeployCommand() *cobra.Command {
 	var target string
+	var rpc string
 
 	cmd := &cobra.Command{
 		Use:   "deploy <name>",
@@ -24,6 +25,10 @@ func MakeViewDeployCommand() *cobra.Command {
 
 			viewName := args[0]
 
+			if (target == "devnet" || target == "mainnet") && rpc == "" {
+				return fmt.Errorf("--rpc is required when --target is %s", target)
+			}
+
 			switch target {
 			case "local":
 				return service.StartLocalNodeAndDeployView(viewName, viewstore, schemastore)
@@ -32,7 +37,7 @@ func MakeViewDeployCommand() *cobra.Command {
 				if err != nil {
 					return err
 				}
-				return service.StartLocalNodeTestAndDeploy(viewName, viewstore, schemastore, wallet)
+				return service.StartLocalNodeTestAndDeploy(viewName, viewstore, schemastore, wallet, rpc)
 			case "mainnet":
 				return fmt.Errorf("target '%s' not yet supported", target)
 			default:
