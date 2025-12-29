@@ -15,9 +15,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/shinzonetwork/view-creator/core/models"
-	schemastore "github.com/shinzonetwork/view-creator/core/schema/store"
-	viewstore "github.com/shinzonetwork/view-creator/core/view/store"
+	"github.com/shinzonetwork/shinzo-view-creator/core/models"
+	schemastore "github.com/shinzonetwork/shinzo-view-creator/core/schema/store"
+	viewstore "github.com/shinzonetwork/shinzo-view-creator/core/view/store"
 )
 
 var defraCmd *exec.Cmd

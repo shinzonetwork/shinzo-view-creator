@@ -3,8 +3,8 @@ package cli
 import (
 	"fmt"
 
-	"github.com/shinzonetwork/view-creator/core/schema/store/fileschema"
-	"github.com/shinzonetwork/view-creator/core/service"
+	"github.com/shinzonetwork/shinzo-view-creator/core/schema/store/fileschema"
+	"github.com/shinzonetwork/shinzo-view-creator/core/service"
 	"github.com/spf13/cobra"
 )
 
@@ -47,6 +47,7 @@ func MakeViewDeployCommand() *cobra.Command {
 	}
 
 	cmd.Flags().StringVar(&target, "target", "", "Where to deploy the view: local, devnet, or mainnet (required)")
+	cmd.Flags().StringVar(&rpc, "rpc", "", "RPC endpoint URL (required for devnet/mainnet)")
 
 	cmd.MarkFlagRequired("target")
 	return cmd
