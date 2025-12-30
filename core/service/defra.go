@@ -28,7 +28,7 @@ type DefraViewPayload struct {
 	Transform map[string]any `json:"Transform"`
 }
 
-func StartLocalNodeAndDeployView(name string, viewstore viewstore.ViewStore, schemastore schemastore.SchemaStore) error {
+func StartLocalNodeAndDeployView(name string, viewstore viewstore.ViewStore, schemastore schemastore.SchemaStore, debug bool) error {
 	ctx := context.Background()
 
 	view, err := viewstore.Load(name)
@@ -62,8 +62,11 @@ func StartLocalNodeAndDeployView(name string, viewstore viewstore.ViewStore, sch
 
 	defraCmd = exec.Command(bin, "start", "--rootdir", rootDir)
 	defraCmd.Env = env
-	// defraCmd.Stdout = os.Stdout
-	// defraCmd.Stderr = os.Stderr
+
+	if debug {
+		defraCmd.Stdout = os.Stdout
+		defraCmd.Stderr = os.Stderr
+	}
 
 	if err := defraCmd.Start(); err != nil {
 		return fmt.Errorf("failed to start defradb: %w", err)
@@ -118,7 +121,7 @@ func StartLocalNodeAndDeployView(name string, viewstore viewstore.ViewStore, sch
 	return shutdownDefra()
 }
 
-func StartLocalNodeAndTestView(name string, viewstore viewstore.ViewStore, schemastore schemastore.SchemaStore) error {
+func StartLocalNodeAndTestView(name string, viewstore viewstore.ViewStore, schemastore schemastore.SchemaStore, debug bool) error {
 	ctx := context.Background()
 
 	fmt.Println("🔍 Loading view...")
@@ -152,8 +155,10 @@ func StartLocalNodeAndTestView(name string, viewstore viewstore.ViewStore, schem
 	defraCmd = exec.Command(bin, "start", "--rootdir", rootDir)
 
 	// This is here for debug purposes; Show command output as it happens
-	// defraCmd.Stdout = os.Stdout
-	// defraCmd.Stderr = os.Stderr
+	if debug {
+		defraCmd.Stdout = os.Stdout
+		defraCmd.Stderr = os.Stderr
+	}
 
 	defraCmd.Env = env
 

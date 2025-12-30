@@ -27,21 +27,27 @@ type ViewLite struct {
 	Transform models.Transform `json:"transform"`
 }
 
-func StartLocalNodeTestAndDeploy(name string, viewstore viewstore.ViewStore, schemastore schemastore.SchemaStore, wallet Wallet, rpc string) error {
+func StartLocalNodeTestAndDeploy(name string, viewstore viewstore.ViewStore, schemastore schemastore.SchemaStore, wallet Wallet, rpc string, debug bool) error {
 	fmt.Println("🔧 Building and testing view before deployment...")
 
-	// Suppress stdout and stderr
-	null, _ := os.Open(os.DevNull)
-	stdout := os.Stdout
-	stderr := os.Stderr
-	os.Stdout = null
-	os.Stderr = null
+	var stdout, stderr *os.File
+	var null *os.File
 
-	err := StartLocalNodeAndTestView(name, viewstore, schemastore)
+	if !debug {
+		null, _ = os.Open(os.DevNull)
+		stdout = os.Stdout
+		stderr = os.Stderr
+		os.Stdout = null
+		os.Stderr = null
+	}
 
-	// Restore original stdout and stderr
-	os.Stdout = stdout
-	os.Stderr = stderr
+	err := StartLocalNodeAndTestView(name, viewstore, schemastore, debug)
+
+	if !debug {
+		os.Stdout = stdout
+		os.Stderr = stderr
+		_ = null.Close()
+	}
 
 	if err != nil {
 		return fmt.Errorf("❌ View failed to build or pass tests: %w", err)
