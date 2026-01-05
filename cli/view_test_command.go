@@ -20,7 +20,7 @@ func MakeViewTestCommand() *cobra.Command {
 
 			viewName := args[0]
 
-			return service.StartLocalNodeAndTestView(viewName, viewstore, schemastore)
+			return service.StartLocalNodeAndTestView(viewName, viewstore, schemastore, false)
 		},
 	}
 
