@@ -298,27 +298,55 @@ func RefreshView(ctx context.Context, defraURL string, collection string) error 
 	return nil
 }
 
+// func extractCollectionName(result string) (string, error) {
+// 	var parsed []map[string]interface{}
+// 	if err := json.Unmarshal([]byte(result), &parsed); err != nil {
+// 		return "", fmt.Errorf("failed to parse result: %w", err)
+// 	}
+
+// 	if len(parsed) == 0 {
+// 		return "", fmt.Errorf("empty result")
+// 	}
+
+// 	version, ok := parsed[0]["version"].(map[string]interface{})
+// 	if !ok {
+// 		return "", fmt.Errorf("missing or invalid 'version' field")
+// 	}
+
+// 	name, ok := version["Name"].(string)
+// 	if !ok {
+// 		return "", fmt.Errorf("missing or invalid 'Name' field")
+// 	}
+
+// 	return name, nil
+// }
+
 func extractCollectionName(result string) (string, error) {
-	var parsed []map[string]interface{}
+	var parsed []map[string]any
 	if err := json.Unmarshal([]byte(result), &parsed); err != nil {
 		return "", fmt.Errorf("failed to parse result: %w", err)
 	}
-
 	if len(parsed) == 0 {
 		return "", fmt.Errorf("empty result")
 	}
 
-	version, ok := parsed[0]["version"].(map[string]interface{})
-	if !ok {
-		return "", fmt.Errorf("missing or invalid 'version' field")
+	// Format A: { "version": { "Name": ... }, "schema": ... }
+	if vRaw, ok := parsed[0]["version"]; ok && vRaw != nil {
+		if v, ok := vRaw.(map[string]any); ok {
+			if name, ok := v["Name"].(string); ok && name != "" {
+				return name, nil
+			}
+			return "", fmt.Errorf("missing or invalid 'version.Name' field")
+		}
+		return "", fmt.Errorf("invalid 'version' type")
 	}
 
-	name, ok := version["Name"].(string)
-	if !ok {
-		return "", fmt.Errorf("missing or invalid 'Name' field")
+	// Format B: { "Name": "...", "VersionID": "...", ... }
+	if name, ok := parsed[0]["Name"].(string); ok && name != "" {
+		return name, nil
 	}
 
-	return name, nil
+	return "", fmt.Errorf("missing 'Name' in both formats")
 }
 
 func InsertDataToDefra(ctx context.Context, data string) error {
