@@ -264,10 +264,6 @@ func SendViewToDefra(ctx context.Context, defraURL string, jsonPayload string) (
 
 	body, _ := io.ReadAll(resp.Body)
 
-	fmt.Printf("result of sending view")
-	fmt.Printf(resp.Status)
-	fmt.Printf(string(body))
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return "", fmt.Errorf("unexpected status code %d: %s", resp.StatusCode, string(body))
 	}
